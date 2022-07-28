@@ -11,6 +11,47 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static("public"));
 
+const articleSchema = mongoose.Schema({
+    title: String,
+    content: String,
+});
+
+const Article = mongoose.model("Article", articleSchema);
+
+////////////////////////////////Request Targeting All Articles //////////////////////////////////
+
+app.route("/articles")
+.get( (req, res) => {
+    Article.find({}, (err, articles) => {
+        if(err) { res.send(err); return; }
+        else {
+            res.send(articles);
+        }
+    });
+})
+.post( (req, res) => {
+    const article = new Article({
+        title: req.body.title,
+        content: req.body.content,
+    });
+    article.save((err) => {
+        if(err) { res.send(err); return; }
+        else {
+            res.send("Sucessfully added a new article!");
+        }
+    })
+})
+.delete( (req, res) => {
+    Article.deleteMany({}, (err) => {
+        if(err) { res.send(err); return; }
+        else {  
+            res.send("Successfully deleted all articles!");
+        }
+    })
+});
+
+
+
 
 
 app.listen(3000, () => {
