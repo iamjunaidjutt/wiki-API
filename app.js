@@ -18,7 +18,7 @@ const articleSchema = mongoose.Schema({
 
 const Article = mongoose.model("Article", articleSchema);
 
-////////////////////////////////Request Targeting All Articles //////////////////////////////////
+/////////////////////////////////////////// Request Targeting All Articles /////////////////////////////////////////////
 
 app.route("/articles")
 .get( (req, res) => {
@@ -50,6 +50,55 @@ app.route("/articles")
     })
 });
 
+///////////////////////////////////////// Request Targeting a specific Article //////////////////////////////////////////
+
+app.route("/articles/:articleTitle")
+.get((req, res) => {
+    Article.findOne({ title: req.params.articleTitle }, (err, foundArticle) => {
+        if(err) { res.send(err); return; }
+        else {
+            res.send(foundArticle);
+        }
+    });
+})
+.put((req, res) => {
+    Article.replaceOne(
+        {title: req.params.articleTitle},
+        {title: req.body.title, content: req.body.content},
+        (err) => {
+            if(!err) {
+                res.send("Successfully updated the article!");
+            } else {
+                res.send(err.message);
+            }
+        }
+    );
+})
+.patch((req, res) => {
+    Article.updateOne(
+        { title: req.params.articleTitle },
+        {$set: req.body},
+        (err) => {
+            if(!err) {
+                res.send("Successfully updated the article!");
+            } else {
+                res.send(err.message);
+            }
+        }
+    );
+})
+.delete((req, res) => {
+    Article.deleteOne(
+        { title: req.params.articleTitle},
+        (err) => {
+            if(!err) {
+                res.send("Successfully deleted the article!");
+            } else {
+                res.send(err.message);
+            }
+        }
+    );
+});
 
 
 
